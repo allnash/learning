@@ -1,0 +1,54 @@
+# NOTE: If you use a `/` for example google.com/abcd/ <<< ambassador-pro
+# expects the route to be as specfied. As a precaution, consider adding
+# another Mapping. Look below for specification.
+# IMPORTANT: Mappings need unique names.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nash
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  container_mapping_one
+      prefix: /container_name
+      service: container_name
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  container_mapping_two
+      prefix: /container_name/
+      service: container_name
+spec:
+  selector:
+    app: nash
+  ports:
+  - port: 80
+    name: nash-qotm
+    targetPort: http-api
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: container_name
+spec:
+  replicas: 5
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: container_name
+    spec:
+      containers:
+      - name: container_name
+        image: get_container_name_image:v1
+        ports:
+        - name: http-api
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: "0.1"
+            memory: 100Mi

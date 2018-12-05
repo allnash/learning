@@ -1,0 +1,19 @@
+---
+apiVersion: stable.datawire.io/v1beta1
+kind: Policy
+metadata:
+ name: httpbin-policy
+spec:
+ rules:
+  - host: "*"
+    path: /callback
+    public: true
+  - host: "*"
+    path: /container_name/
+    public: true
+  - host: "*"
+    path: /container_name/user-agent/*
+    public: false
+  - host: "*"
+    path: /container_name/headers/*
+    scopes: "read:test"
